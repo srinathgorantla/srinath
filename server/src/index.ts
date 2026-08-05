@@ -13,10 +13,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Security & Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Avoid blocking Vercel assets
+}));
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    origin: '*',
     credentials: true,
   })
 );
@@ -39,9 +41,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/farms', farmRoutes);
 app.use('/api/advisories', advisoryRoutes);
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: `Route ${req.method} ${req.url} not found` });
+// 404 Handler for API routes
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ success: false, error: `API route ${req.method} ${req.url} not found` });
 });
 
 // Global Error Handling Middleware
@@ -54,13 +56,16 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 AgriWise AI Express Backend running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
-  console.log(`🔒 Supabase Status: ${isSupabaseConfigured ? 'Active (Live)' : 'Fallback (Demo Mode)'}`);
-  console.log(`🤖 Gemini AI Status: ${isGeminiConfigured ? 'Active (SDK)' : 'Fallback (Engine)'}`);
-  console.log(`=======================================================`);
-});
+// Start standalone HTTP listener only when not running as a Vercel serverless function
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 AgriWise AI Express Backend running on port ${PORT}`);
+    console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`🔒 Supabase Status: ${isSupabaseConfigured ? 'Active (Live)' : 'Fallback (Demo Mode)'}`);
+    console.log(`🤖 Gemini AI Status: ${isGeminiConfigured ? 'Active (SDK)' : 'Fallback (Engine)'}`);
+    console.log(`=======================================================`);
+  });
+}
 
 export default app;
