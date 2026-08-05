@@ -1,7 +1,7 @@
 import { Farm, AdvisoryRecord, AdvisoryInputPayload } from '../types';
 import { supabase, isSupabaseClientConfigured } from './supabase';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '/api' : 'http://localhost:5000/api');
 
 async function getAuthHeaders(): Promise<HeadersInit> {
   const headers: HeadersInit = {
