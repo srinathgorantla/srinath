@@ -1,0 +1,31 @@
+# Node & Dependency directories
+node_modules/
+server/node_modules/
+client/node_modules/
+
+# Environment Variables & Secrets (CRITICAL FOR SECURITY)
+.env
+.env.local
+.env.*.local
+server/.env
+client/.env
+
+# Build outputs
+dist/
+server/dist/
+client/dist/
+
+# Logs & Debugging
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Antigravity artifacts
+.gemini/
